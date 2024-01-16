@@ -1,0 +1,101 @@
+---
+title: "Miniessay2"
+author: "Xincheng Zhang"
+format: pdf
+editor: visual
+---
+
+Introduction:
+
+Personal safety has always been a top concern for governments and people around the world. In open data Toronto, there are Neighborhood Crime Rates records information on neighbors and residents being assaulted by Assault, Auto Theft, Break and Enter, organized by community Robbery, etc.from 2014 to 2019 In this report, I will search, organize, plan and make a line chart to compare the number of Assaults in 4 selected regions in different years.
+
+```{r}
+library("janitor")
+library("knitr")
+library("lubridate")
+library("opendatatoronto")
+library("tidyverse")
+```
+
+```{r}
+csv_url <- "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/neighbourhood-crime-rates/resource/02898503-a367-4221-9e74-7addb260d110/download/neighbourhood-crime-rates%20-%204326.csv"
+crimerate_data <- read.csv(url(csv_url))
+
+```
+
+
+```{r}
+ccleaned_crimerate_data <-
+  clean_names(crimerate_data)
+head(ccleaned_crimerate_data)
+```
+
+```{r}
+cleaned_crimerate_data <-
+  ccleaned_crimerate_data |>
+  select(
+    x_id,
+    area_name,
+    assault_2014,
+    assault_2015,
+    assault_2016,
+    assault_2017,
+    assault_2018,
+    assault_2019,
+  )
+
+head(cleaned_crimerate_data)
+```
+
+```{r}
+
+cleaned5_crimerate_data<- cleaned_crimerate_data[1:4, ]
+
+print(cleaned5_crimerate_data)
+
+
+```
+
+```{r}
+library(tidyverse)
+new_dataset <- cleaned5_crimerate_data %>%
+  gather(key = "year", value = "assault", assault_2014, assault_2015, assault_2016, assault_2017, assault_2018, assault_2019) %>%
+  mutate(year = sub("assault_", "", year))
+
+head(new_dataset)
+```
+
+```{r}
+library(ggplot2)
+ggplot(new_dataset, aes(x = area_name, y = assault, group = year, color = year)) +
+  geom_line() +
+  labs(title = "Number of Assaults Over the Years by Area",
+       x = "Area",
+       y = "Number of Assaults") +
+  scale_color_manual(values = c("2014" = "blue", "2015" = "orange", "2016" = "green",
+                                "2017" = "red", "2018" = "purple", "2019" = "brown")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+
+```
+
+```{r}
+write.csv(new_dataset, file = "miniessay2.csv")
+
+
+
+```
+
+
+
+
+
+Analysis:
+
+The issue of personal safety has always been a concern in Canada, and it is related to the country's overall crime rate and citizen safety. This is also the main motivation for our research.
+
+A subset of the About Neighborhood Crime Rates data from the given database was used in this research report. Mainly reflected in the number of citizens who were assaulted in six different years corresponding to the first four regions.
+
+By making a line graph, it was found that the number of such crimes was highest in Junction-Wallace Emerson, while the number of such crimes was lowest in North Toronto. Dovercourt Village and South Eglinton-Davisville have similar crime rates in various years. As the years increase, 2019 has the highest crime rate in various regions. On the contrary, 2014 had the lowest crime rate in all regions.
+
+Because the data in this report only takes the six-year situation of assault types in the first four regions, it also shows that more different crime types and higher crime numbers may be found in other regions. This is because with time As the years increase, the crime numbers in various regions increases significantly. This situation is something that Toronto residents need to pay attention to and need to be rectified.
